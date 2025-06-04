@@ -1,20 +1,36 @@
 package com.example.agecalculator.presentation.calculator
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.agecalculator.data.local.OccasionDao
+import com.example.agecalculator.data.local.OccasionDatabase
+import com.example.agecalculator.data.local.OccasionEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.periodUntil
 import kotlinx.datetime.until
 
-class CalculatorViewModel : ViewModel() {
+class CalculatorViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val occasionDao: OccasionDao =
+        OccasionDatabase.getDatabase(application).occasionDao()
 
     private val _uiState = MutableStateFlow(CalculatorUiState())
     val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
+
+    init {
+        getOccasion()
+    }
 
     fun onAction(action: CalculatorAction) {
         when (action) {
@@ -43,12 +59,14 @@ class CalculatorViewModel : ViewModel() {
                     )
                 }
             }
+
             CalculatorAction.DismissDatePicker -> {
                 _uiState.update { it.copy(isDatePickerDialogOpen = false) }
             }
+
             is CalculatorAction.DateSelected -> {
                 _uiState.update { it.copy(isDatePickerDialogOpen = false) }
-                when(uiState.value.activeDateField) {
+                when (uiState.value.activeDateField) {
                     DateField.FROM -> _uiState.update { it.copy(fromDateMillis = action.millis) }
                     DateField.TO -> _uiState.update { it.copy(toDateMillis = action.millis) }
                 }
@@ -58,6 +76,37 @@ class CalculatorViewModel : ViewModel() {
             is CalculatorAction.SetTitle -> {
                 _uiState.update { it.copy(title = action.title) }
             }
+
+            CalculatorAction.SaveOccasion -> {
+                saveOccasion()
+            }
+        }
+    }
+
+    private fun saveOccasion() {
+        viewModelScope.launch {
+            val occasion = OccasionEntity(
+                id = 1,
+                dateMillis = uiState.value.fromDateMillis,
+                emoji = uiState.value.emoji,
+                title = uiState.value.title
+            )
+            occasionDao.upsertOccasion(occasion)
+        }
+    }
+
+    private fun getOccasion() {
+        viewModelScope.launch {
+            occasionDao.getOccasionById(1)?.let { occasion ->
+                _uiState.update {
+                    it.copy(
+                        fromDateMillis = occasion.dateMillis,
+                        emoji = occasion.emoji,
+                        title = occasion.title
+                    )
+                }
+            }
+            calculateStats()
         }
     }
 
