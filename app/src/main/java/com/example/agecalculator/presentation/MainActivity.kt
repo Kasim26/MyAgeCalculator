@@ -1,4 +1,4 @@
-package com.example.agecalculator
+package com.example.agecalculator.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,13 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.agecalculator.presentation.calculator.CalculatorScreen
 import com.example.agecalculator.presentation.calculator.CalculatorViewModel
 import com.example.agecalculator.ui.theme.AgeCalculatorTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,12 +22,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             AgeCalculatorTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.Companion.fillMaxSize()
                 ) { innerPadding ->
-                    val viewModel: CalculatorViewModel = viewModel()
+                    val viewModel: CalculatorViewModel = koinViewModel()
                     val state by viewModel.uiState.collectAsStateWithLifecycle()
                     CalculatorScreen(
-                        modifier = Modifier.padding(innerPadding),
+                        modifier = Modifier.Companion.padding(innerPadding),
                         state = state,
                         onAction = viewModel::onAction
                     )

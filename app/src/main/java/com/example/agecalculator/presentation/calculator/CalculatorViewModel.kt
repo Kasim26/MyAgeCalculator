@@ -1,12 +1,9 @@
 package com.example.agecalculator.presentation.calculator
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.agecalculator.data.local.OccasionDao
-import com.example.agecalculator.data.local.OccasionDatabase
-import com.example.agecalculator.data.local.OccasionEntity
+import com.example.agecalculator.domain.model.Occasion
+import com.example.agecalculator.domain.repository.OccasionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,11 +16,8 @@ import kotlinx.datetime.periodUntil
 import kotlinx.datetime.until
 
 class CalculatorViewModel(
-    application: Application
-) : AndroidViewModel(application) {
-
-    private val occasionDao: OccasionDao =
-        OccasionDatabase.getDatabase(application).occasionDao()
+    private val repository: OccasionRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CalculatorUiState())
     val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
@@ -85,19 +79,19 @@ class CalculatorViewModel(
 
     private fun saveOccasion() {
         viewModelScope.launch {
-            val occasion = OccasionEntity(
+            val occasion = Occasion(
                 id = 1,
                 dateMillis = uiState.value.fromDateMillis,
                 emoji = uiState.value.emoji,
                 title = uiState.value.title
             )
-            occasionDao.upsertOccasion(occasion)
+            repository.upsertOccasion(occasion)
         }
     }
 
     private fun getOccasion() {
         viewModelScope.launch {
-            occasionDao.getOccasionById(1)?.let { occasion ->
+            repository.getOccasionById(1)?.let { occasion ->
                 _uiState.update {
                     it.copy(
                         fromDateMillis = occasion.dateMillis,
