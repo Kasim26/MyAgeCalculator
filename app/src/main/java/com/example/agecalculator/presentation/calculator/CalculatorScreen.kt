@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,21 +28,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.example.agecalculator.R
 import com.example.agecalculator.presentation.component.AgeStats
+import com.example.agecalculator.presentation.component.CustomDatePickerDialog
 import com.example.agecalculator.presentation.component.EmojiPickerDialog
 import com.example.agecalculator.presentation.component.StatisticsCard
 import com.example.agecalculator.presentation.component.StylizedAgeText
@@ -53,21 +47,25 @@ import com.example.agecalculator.ui.theme.CustomPink
 
 @Composable
 fun CalculatorScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: CalculatorUiState,
+    onAction: (CalculatorAction) -> Unit
 ) {
 
-    var isEmojiPickerDialogOpen by rememberSaveable { mutableStateOf(false) }
-    var emoji by remember { mutableStateOf("🎂") }
-
     EmojiPickerDialog(
-        isOpen = isEmojiPickerDialogOpen,
+        isOpen = state.isEmojiDialogOpen,
+        onDismissRequest = { onAction(CalculatorAction.DismissEmojiPicker) },
         onEmojiSelected = { selectedEmoji ->
-            emoji = selectedEmoji
-            isEmojiPickerDialogOpen = false
-        },
-        onDismissRequest = {
-            isEmojiPickerDialogOpen = false
+            onAction(CalculatorAction.EmojiSelected(selectedEmoji))
         }
+    )
+
+    CustomDatePickerDialog(
+        isOpen = state.isDatePickerDialogOpen,
+        onDismissRequest = { onAction(CalculatorAction.DismissDatePicker) },
+        onConfirmButtonClick = { selectedDate ->
+            onAction(CalculatorAction.DateSelected(selectedDate))
+        },
     )
 
     Column(
@@ -89,8 +87,8 @@ fun CalculatorScreen(
                 modifier = Modifier
                     .widthIn(max = 400.dp)
                     .padding(8.dp),
-                emoji = emoji,
-                onEmojiBoxClick = { isEmojiPickerDialogOpen = true }
+                state = state,
+                onAction = onAction
             )
             StatisticsSection(
                 modifier = Modifier
@@ -143,8 +141,8 @@ private fun CalculatorTopBar(
 @Composable
 private fun HeaderSection(
     modifier: Modifier = Modifier,
-    emoji: String,
-    onEmojiBoxClick: () -> Unit
+    state: CalculatorUiState,
+    onAction: (CalculatorAction) -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -159,11 +157,11 @@ private fun HeaderSection(
                     shape = CircleShape,
                     brush = Brush.linearGradient(listOf(CustomBlue, CustomPink))
                 )
-                .clickable { onEmojiBoxClick() },
+                .clickable { onAction(CalculatorAction.ShowEmojiPicker) },
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = emoji,
+                text = state.emoji,
                 style = MaterialTheme.typography.displayLarge
             )
         }
@@ -178,14 +176,14 @@ private fun HeaderSection(
         Spacer(modifier = Modifier.height(16.dp))
         DateSection(
             title = "From",
-            date = "20 Dec, 2025",
-            onDateIconClick = {}
+            date = "${state.fromDateMillis}",
+            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.FROM)) }
         )
         Spacer(modifier = Modifier.height(8.dp))
         DateSection(
             title = "To",
-            date = "28 Jan, 2026",
-            onDateIconClick = {}
+            date = "${state.toDateMillis}",
+            onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.TO)) }
         )
     }
 }
@@ -245,6 +243,9 @@ private fun DateSection(
 @Composable
 private fun PreviewCalculatorScreen() {
     AgeCalculatorTheme {
-        CalculatorScreen()
+        CalculatorScreen(
+            state = CalculatorUiState(),
+            onAction = {}
+        )
     }
 }
