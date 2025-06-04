@@ -7,4 +7,5 @@ sealed interface CalculatorAction {
     data class ShowDatePicker(val dateField: DateField) : CalculatorAction
     data object DismissDatePicker : CalculatorAction
     data class DateSelected(val millis: Long?) : CalculatorAction
+    data class SetTitle(val title: String) : CalculatorAction
 }

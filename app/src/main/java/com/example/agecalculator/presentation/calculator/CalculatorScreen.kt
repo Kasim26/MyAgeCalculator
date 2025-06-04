@@ -36,11 +36,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.example.agecalculator.R
-import com.example.agecalculator.presentation.component.AgeStats
 import com.example.agecalculator.presentation.component.CustomDatePickerDialog
 import com.example.agecalculator.presentation.component.EmojiPickerDialog
 import com.example.agecalculator.presentation.component.StatisticsCard
 import com.example.agecalculator.presentation.component.StylizedAgeText
+import com.example.agecalculator.presentation.util.toFormattedDateString
 import com.example.agecalculator.ui.theme.AgeCalculatorTheme
 import com.example.agecalculator.ui.theme.CustomBlue
 import com.example.agecalculator.ui.theme.CustomPink
@@ -93,7 +93,8 @@ fun CalculatorScreen(
             StatisticsSection(
                 modifier = Modifier
                     .widthIn(max = 400.dp)
-                    .padding(16.dp)
+                    .padding(16.dp),
+                state = state
             )
         }
     }
@@ -168,21 +169,21 @@ private fun HeaderSection(
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "",
-            onValueChange = {},
+            value = state.title,
+            onValueChange = { onAction(CalculatorAction.SetTitle(it)) },
             label = { Text(text = "Title") },
             singleLine = true
         )
         Spacer(modifier = Modifier.height(16.dp))
         DateSection(
             title = "From",
-            date = "${state.fromDateMillis}",
+            date = state.fromDateMillis.toFormattedDateString(),
             onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.FROM)) }
         )
         Spacer(modifier = Modifier.height(8.dp))
         DateSection(
             title = "To",
-            date = "${state.toDateMillis}",
+            date = state.toDateMillis.toFormattedDateString(),
             onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.TO)) }
         )
     }
@@ -190,28 +191,21 @@ private fun HeaderSection(
 
 @Composable
 private fun StatisticsSection(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: CalculatorUiState
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         StylizedAgeText(
-            years = 25,
-            months = 8,
-            days = 14
+            years = state.period.years,
+            months = state.period.months,
+            days = state.period.days
         )
         Spacer(modifier = Modifier.height(16.dp))
         StatisticsCard(
-            ageStats = AgeStats(
-                years = 10,
-                months = 105,
-                weeks = 1053,
-                days = 46254,
-                hours = 15648,
-                minutes = 658325,
-                seconds = 65214565
-            )
+            ageStats = state.ageStats
         )
     }
 }
