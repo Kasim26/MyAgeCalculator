@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.agecalculator.presentation.calculator.CalculatorScreen
 import com.example.agecalculator.presentation.calculator.CalculatorViewModel
-import com.example.agecalculator.ui.theme.AgeCalculatorTheme
+import com.example.agecalculator.presentation.theme.AgeCalculatorTheme
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {

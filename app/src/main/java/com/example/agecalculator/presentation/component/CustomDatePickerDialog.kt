@@ -28,7 +28,9 @@ fun CustomDatePickerDialog(
             modifier = modifier.verticalScroll(rememberScrollState()),
             onDismissRequest = onDismissRequest,
             confirmButton = {
-                TextButton(onClick = { onConfirmButtonClick(state.selectedDateMillis) }) {
+                TextButton(
+                    onClick = { onConfirmButtonClick(state.selectedDateMillis) }
+                ) {
                     Text(text = "Select")
                 }
             },

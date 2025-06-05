@@ -40,10 +40,11 @@ import com.example.agecalculator.presentation.component.CustomDatePickerDialog
 import com.example.agecalculator.presentation.component.EmojiPickerDialog
 import com.example.agecalculator.presentation.component.StatisticsCard
 import com.example.agecalculator.presentation.component.StylizedAgeText
+import com.example.agecalculator.presentation.theme.AgeCalculatorTheme
+import com.example.agecalculator.presentation.theme.CustomBlue
+import com.example.agecalculator.presentation.theme.CustomPink
+import com.example.agecalculator.presentation.theme.spacing
 import com.example.agecalculator.presentation.util.toFormattedDateString
-import com.example.agecalculator.ui.theme.AgeCalculatorTheme
-import com.example.agecalculator.ui.theme.CustomBlue
-import com.example.agecalculator.ui.theme.CustomPink
 
 @Composable
 fun CalculatorScreen(
@@ -63,8 +64,8 @@ fun CalculatorScreen(
     CustomDatePickerDialog(
         isOpen = state.isDatePickerDialogOpen,
         onDismissRequest = { onAction(CalculatorAction.DismissDatePicker) },
-        onConfirmButtonClick = { selectedDate ->
-            onAction(CalculatorAction.DateSelected(selectedDate))
+        onConfirmButtonClick = { selectedDateMillis ->
+            onAction(CalculatorAction.DateSelected(selectedDateMillis))
         },
     )
 
@@ -86,14 +87,14 @@ fun CalculatorScreen(
             HeaderSection(
                 modifier = Modifier
                     .widthIn(max = 400.dp)
-                    .padding(8.dp),
+                    .padding(MaterialTheme.spacing.small),
                 state = state,
                 onAction = onAction
             )
             StatisticsSection(
                 modifier = Modifier
                     .widthIn(max = 400.dp)
-                    .padding(16.dp),
+                    .padding(MaterialTheme.spacing.medium),
                 state = state
             )
         }
@@ -166,7 +167,7 @@ private fun HeaderSection(
                 style = MaterialTheme.typography.displayLarge
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = state.title,
@@ -174,13 +175,13 @@ private fun HeaderSection(
             label = { Text(text = "Title") },
             singleLine = true
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         DateSection(
             title = "From",
             date = state.fromDateMillis.toFormattedDateString(),
             onDateIconClick = { onAction(CalculatorAction.ShowDatePicker(DateField.FROM)) }
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
         DateSection(
             title = "To",
             date = state.toDateMillis.toFormattedDateString(),
@@ -203,7 +204,7 @@ private fun StatisticsSection(
             months = state.period.months,
             days = state.period.days
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
         StatisticsCard(
             ageStats = state.ageStats
         )
