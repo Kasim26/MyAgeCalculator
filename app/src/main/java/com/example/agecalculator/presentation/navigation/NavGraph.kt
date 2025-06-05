@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.agecalculator.presentation.calculator.CalculatorScreen
 import com.example.agecalculator.presentation.calculator.CalculatorViewModel
 import com.example.agecalculator.presentation.dashboard.DashboardScreen
+import com.example.agecalculator.presentation.dashboard.DashboardViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -25,7 +26,11 @@ fun NavGraph(
         navController = navController
     ) {
         composable<Route.DashboardScreen> {
+            val viewModel: DashboardViewModel = koinViewModel()
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
             DashboardScreen(
+                state = state,
+                onAction = viewModel::onAction,
                 navigateToCalculatorScreen = { occasionId ->
                     navController.navigate(Route.CalculatorScreen(occasionId))
                 }
