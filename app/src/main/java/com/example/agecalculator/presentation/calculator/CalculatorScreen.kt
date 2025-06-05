@@ -50,7 +50,8 @@ import com.example.agecalculator.presentation.util.toFormattedDateString
 fun CalculatorScreen(
     modifier: Modifier = Modifier,
     state: CalculatorUiState,
-    onAction: (CalculatorAction) -> Unit
+    onAction: (CalculatorAction) -> Unit,
+    navigateUp: () -> Unit
 ) {
 
     EmojiPickerDialog(
@@ -75,7 +76,7 @@ fun CalculatorScreen(
     ) {
         CalculatorTopBar(
             isDeleteIconVisible = true,
-            onBackClick = {},
+            onBackClick = navigateUp,
             onSaveClick = { onAction(CalculatorAction.SaveOccasion) },
             onDeleteClick = {}
         )
@@ -240,7 +241,8 @@ private fun PreviewCalculatorScreen() {
     AgeCalculatorTheme {
         CalculatorScreen(
             state = CalculatorUiState(),
-            onAction = {}
+            onAction = {},
+            navigateUp = {}
         )
     }
 }

@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.agecalculator.presentation.calculator.CalculatorScreen
 import com.example.agecalculator.presentation.calculator.CalculatorViewModel
+import com.example.agecalculator.presentation.dashboard.DashboardScreen
+import com.example.agecalculator.presentation.navigation.NavGraph
 import com.example.agecalculator.presentation.theme.AgeCalculatorTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -24,12 +26,8 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     modifier = Modifier.Companion.fillMaxSize()
                 ) { innerPadding ->
-                    val viewModel: CalculatorViewModel = koinViewModel()
-                    val state by viewModel.uiState.collectAsStateWithLifecycle()
-                    CalculatorScreen(
-                        modifier = Modifier.Companion.padding(innerPadding),
-                        state = state,
-                        onAction = viewModel::onAction
+                    NavGraph(
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
