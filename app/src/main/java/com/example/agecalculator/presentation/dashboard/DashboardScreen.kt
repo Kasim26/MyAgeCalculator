@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -36,7 +37,6 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.agecalculator.domain.model.Occasion
-import com.example.agecalculator.presentation.calculator.CalculatorAction
 import com.example.agecalculator.presentation.component.CustomDatePickerDialog
 import com.example.agecalculator.presentation.component.StylizedAgeText
 import com.example.agecalculator.presentation.theme.spacing
@@ -75,9 +75,7 @@ fun DashboardScreen(
                 OccasionCard(
                     modifier = Modifier.fillMaxWidth(),
                     occasion = occasion,
-                    onCalendarIconClick = {
-                        onAction(DashboardAction.ShowDatePicker(occasion))
-                    },
+                    onCalendarIconClick = { onAction(DashboardAction.ShowDatePicker(occasion)) },
                     onClick = { navigateToCalculatorScreen(occasion.id) }
                 )
             }
@@ -123,9 +121,11 @@ private fun OccasionCard(
                 .padding(
                     start = MaterialTheme.spacing.small,
                     top = MaterialTheme.spacing.medium
-                )
+                ),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = occasion.emoji, fontSize = 30.sp)
+            Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             Column {
                 Text(text = occasion.title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 Text(text = dateMillis.toFormattedDateString(), color = Color.Gray)
